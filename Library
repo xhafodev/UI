@@ -122,22 +122,19 @@ function Library:MakeDraggable(Instance, Cutoff)
         BorderSizePixel = 0;
         Size = Instance.Size;
         Visible = false;
-        ZIndex = 0;
+        ZIndex = 100;
         Parent = ScreenGui;
     });
 
-    local GhostOutline = Library:Create('Frame', {
-        BackgroundTransparency = 0.85;
-        BackgroundColor3 = Library.AccentColor;
-        BorderColor3 = Library.AccentColor;
-        Size = UDim2.new(1, 0, 1, 0);
-        ZIndex = 0;
+    local GhostStroke = Library:Create('UIStroke', {
+        Color = Library.AccentColor;
+        Thickness = 1;
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
         Parent = Ghost;
     });
 
-    Library:AddToRegistry(GhostOutline, {
-        BackgroundColor3 = 'AccentColor';
-        BorderColor3 = 'AccentColor';
+    Library:AddToRegistry(GhostStroke, {
+        Color = 'AccentColor';
     });
 
     Instance.InputBegan:Connect(function(Input)
