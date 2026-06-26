@@ -117,7 +117,30 @@ end;
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
 
-   Instance.InputBegan:Connect(function(Input)
+    local Ghost = Library:Create('Frame', {
+        BackgroundTransparency = 1;
+        BorderSizePixel = 0;
+        Size = Instance.Size;
+        Visible = false;
+        ZIndex = 0;
+        Parent = ScreenGui;
+    });
+
+    local GhostOutline = Library:Create('Frame', {
+        BackgroundTransparency = 0.85;
+        BackgroundColor3 = Library.AccentColor;
+        BorderColor3 = Library.AccentColor;
+        Size = UDim2.new(1, 0, 1, 0);
+        ZIndex = 0;
+        Parent = Ghost;
+    });
+
+    Library:AddToRegistry(GhostOutline, {
+        BackgroundColor3 = 'AccentColor';
+        BorderColor3 = 'AccentColor';
+    });
+
+    Instance.InputBegan:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 then
             local ObjPos = Vector2.new(
                 Mouse.X - Instance.AbsolutePosition.X,
@@ -128,8 +151,12 @@ function Library:MakeDraggable(Instance, Cutoff)
                 return;
             end;
 
+            Ghost.Size = Instance.Size;
+            Ghost.AnchorPoint = Instance.AnchorPoint;
+            Ghost.Visible = true;
+
             while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                Instance.Position = UDim2.new(
+                Ghost.Position = UDim2.new(
                     0,
                     Mouse.X - ObjPos.X + (Instance.Size.X.Offset * Instance.AnchorPoint.X),
                     0,
@@ -138,6 +165,9 @@ function Library:MakeDraggable(Instance, Cutoff)
 
                 RenderStepped:Wait();
             end;
+
+            Instance.Position = Ghost.Position;
+            Ghost.Visible = false;
         end;
     end)
 end;
@@ -2502,19 +2532,6 @@ function Library:CreateWindow(...)
         BackgroundColor3 = 'BackgroundColor';
     });
 
-    local Highlight = Library:Create('Frame', {
-        BackgroundColor3 = Library.AccentColor;
-        BorderSizePixel = 0;
-        Position = UDim2.new(0, 0, 1, -1);
-        Size = UDim2.new(1, 0, 0, 1);
-        ZIndex = 5;
-        Parent = MainSectionOuter;
-    });
-
-    Library:AddToRegistry(Highlight, {
-        BackgroundColor3 = 'AccentColor';
-    });
-
     local TabContainer = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
         BorderColor3 = Library.OutlineColor;
@@ -2537,13 +2554,23 @@ function Library:CreateWindow(...)
         Parent = MainSectionInner;
     });
 
-    Library:Create('UIListLayout', {
+    local TabAreaLayout = Library:Create('UIListLayout', {
         Padding = UDim.new(0, 0);
         FillDirection = Enum.FillDirection.Horizontal;
         HorizontalAlignment = Enum.HorizontalAlignment.Center;
         SortOrder = Enum.SortOrder.LayoutOrder;
         Parent = TabArea;
     });
+
+    local TabCount = 0;
+
+    local function ResizeTabButtons()
+        for _, Child in next, TabArea:GetChildren() do
+            if not Child:IsA('UIListLayout') then
+                Child.Size = UDim2.new(1 / TabCount, 0, 1, 0);
+            end;
+        end;
+    end;
 
     function Window:SetWindowTitle(Title)
         WindowLabel.Text = Title;
@@ -2555,15 +2582,17 @@ function Library:CreateWindow(...)
             Tabboxes = {};
         };
 
-        local TabButtonWidth = Library:GetTextBounds(Name, Enum.Font.Code, 16);
+        TabCount = TabCount + 1;
 
         local TabButton = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor;
             BorderColor3 = Library.OutlineColor;
-            Size = UDim2.new(0, TabButtonWidth + 8 + 8, 1, 0);
+            Size = UDim2.new(1 / TabCount, 0, 1, 0);
             ZIndex = 1;
             Parent = TabArea;
         });
+
+        ResizeTabButtons();
 
         Library:AddToRegistry(TabButton, {
             BackgroundColor3 = 'BackgroundColor';
