@@ -2535,6 +2535,7 @@ function Library:CreateWindow(...)
         Position = UDim2.new(0, 8, 0, 8);
         Size = UDim2.new(1, -16, 1, -42);
         ZIndex = 2;
+        ClipsDescendants = true;
         Parent = MainSectionInner;
     });
 
@@ -2600,6 +2601,7 @@ function Library:CreateWindow(...)
             Position = UDim2.new(0, 0, 0, 0);
             Size = UDim2.new(1, 0, 1, -1);
             Text = Name;
+            TextSize = 14;
             ZIndex = 1;
             Parent = TabButton;
         });
