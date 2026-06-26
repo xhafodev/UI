@@ -2465,11 +2465,11 @@ function Library:CreateWindow(...)
     });
 
     local WindowLabel = Library:CreateLabel2({
-        Position = UDim2.new(0, 7, 0, 0);
-        Size = UDim2.new(0, 0, 0, 25);
+        Position = UDim2.new(0, 0, 0, 0);
+        Size = UDim2.new(1, 0, 0, 25);
         RichText = true;
         Text = Config.Title or '';
-        TextXAlignment = Enum.TextXAlignment.Left;
+        TextXAlignment = Enum.TextXAlignment.Center;
         ZIndex = 1;
         Parent = Inner;
     });
@@ -2505,6 +2505,7 @@ function Library:CreateWindow(...)
     local Highlight = Library:Create('Frame', {
         BackgroundColor3 = Library.AccentColor;
         BorderSizePixel = 0;
+        Position = UDim2.new(0, 0, 1, -1);
         Size = UDim2.new(1, 0, 0, 1);
         ZIndex = 5;
         Parent = MainSectionOuter;
@@ -2514,25 +2515,10 @@ function Library:CreateWindow(...)
         BackgroundColor3 = 'AccentColor';
     });
 
-    local TabArea = Library:Create('Frame', {
-        BackgroundTransparency = 1;
-        Position = UDim2.new(0, 8, 0, 8);
-        Size = UDim2.new(1, -16, 0, 25);
-        ZIndex = 1;
-        Parent = MainSectionInner;
-    });
-
-    Library:Create('UIListLayout', {
-        Padding = UDim.new(0, 0);
-        FillDirection = Enum.FillDirection.Horizontal;
-        SortOrder = Enum.SortOrder.LayoutOrder;
-        Parent = TabArea;
-    });
-
     local TabContainer = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
         BorderColor3 = Library.OutlineColor;
-        Position = UDim2.new(0, 8, 0, 34);
+        Position = UDim2.new(0, 8, 0, 8);
         Size = UDim2.new(1, -16, 1, -42);
         ZIndex = 2;
         Parent = MainSectionInner;
@@ -2541,6 +2527,22 @@ function Library:CreateWindow(...)
     Library:AddToRegistry(TabContainer, {
         BackgroundColor3 = 'MainColor';
         BorderColor3 = 'OutlineColor';
+    });
+
+    local TabArea = Library:Create('Frame', {
+        BackgroundTransparency = 1;
+        Position = UDim2.new(0, 8, 1, -33);
+        Size = UDim2.new(1, -16, 0, 25);
+        ZIndex = 1;
+        Parent = MainSectionInner;
+    });
+
+    Library:Create('UIListLayout', {
+        Padding = UDim.new(0, 0);
+        FillDirection = Enum.FillDirection.Horizontal;
+        HorizontalAlignment = Enum.HorizontalAlignment.Center;
+        SortOrder = Enum.SortOrder.LayoutOrder;
+        Parent = TabArea;
     });
 
     function Window:SetWindowTitle(Title)
@@ -2580,7 +2582,7 @@ function Library:CreateWindow(...)
             BackgroundColor3 = Library.AccentColor;
             BorderSizePixel = 0;
             Size = UDim2.new(1.01, 0, 0, 1);
-            Position = UDim2.new(-0.01, 0, 0, -1);
+            Position = UDim2.new(-0.01, 0, 1, 0);
             ZIndex = 3;
             Parent = TabButton;
         });
@@ -2592,7 +2594,7 @@ function Library:CreateWindow(...)
         local Blocker = Library:Create('Frame', {
             BackgroundColor3 = Library.SelectedTabColor;
             BorderSizePixel = 0;
-            Position = UDim2.new(0, 0, 1, 0);
+            Position = UDim2.new(0, 0, 0, -1);
             Size = UDim2.new(1, 0, 0, 1);
             BackgroundTransparency = 1;
             ZIndex = 3;
