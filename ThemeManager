@@ -5,66 +5,15 @@ local ThemeManager = {} do
 
 	ThemeManager.Library = nil
 	ThemeManager.DefaultTheme = 'gompgomp'
-
-	ThemeManager.ColorFields = {
-		{ Key = 'BackgroundColor', Label = 'Background color' },
-		{ Key = 'MainColor', Label = 'Main color' },
-		{ Key = 'SecondarySurface', Label = 'Secondary surface' },
-		{ Key = 'TertiarySurface', Label = 'Tertiary surface' },
-		{ Key = 'OutlineColor', Label = 'Outline color' },
-		{ Key = 'OutlineStrong', Label = 'Outline strong' },
-		{ Key = 'AccentColor', Label = 'Accent color' },
-		{ Key = 'AccentHover', Label = 'Accent hover' },
-		{ Key = 'AccentMuted', Label = 'Accent muted' },
-		{ Key = 'FontColor', Label = 'Font color' },
-		{ Key = 'FontSecondary', Label = 'Font secondary' },
-		{ Key = 'FontMuted', Label = 'Font muted' },
-	}
-
-	ThemeManager.GompTheme = {
-		BackgroundColor = '0B0B0D',
-		MainColor = '000000',
-		SecondarySurface = '19191D',
-		TertiarySurface = '202026',
-		OutlineColor = '26262C',
-		OutlineStrong = '34343C',
-		AccentColor = 'FF80DB',
-		AccentHover = 'FF9AE3',
-		AccentMuted = '5A324D',
-		FontColor = 'E3E3E8',
-		FontSecondary = 'A9A9B3',
-		FontMuted = '777782',
-	}
-
 	ThemeManager.BuiltInThemes = {
-		['gompgomp'] = { 1, ThemeManager.GompTheme },
-		['Default'] = { 2, httpService:JSONDecode('{"FontColor":"BFBFBF","MainColor":"0F0F0F","AccentColor":"929667","SelectedTabColor":"101010","BackgroundColor":"1B1B1B","OutlineColor":"0B0B0B"}') },
-		['GameSense'] = { 3, httpService:JSONDecode('{"FontColor":"919191","MainColor":"101010","AccentColor":"9CB819","SelectedTabColor":"101010","BackgroundColor":"111111","OutlineColor":"2D2D2D"}') },
-		['Comet.pub'] = { 4, httpService:JSONDecode('{"FontColor":"5E5E5E","MainColor":"0F0F0F","AccentColor":"5D589D","SelectedTabColor":"1a191d","BackgroundColor":"0F0F0F","OutlineColor":"191919"}') },
-		['Tokyohook.cc'] = { 5, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"191925","AccentColor":"6759b3","SelectedTabColor":"1a1a29","BackgroundColor":"16161f","OutlineColor":"433e58"}') },
-		['pandahook.cc'] = { 6, httpService:JSONDecode('{"FontColor":"AEAEAE","MainColor":"0F0F0F","AccentColor":"30406A","SelectedTabColor":"151515","BackgroundColor":"0F0F0F","OutlineColor":"171717"}') },
-		['Mae.lua'] = { 7, httpService:JSONDecode('{"FontColor":"c5c5c5","MainColor":"0F0F0F","AccentColor":"ffc6fe","SelectedTabColor":"171717","BackgroundColor":"0f0f0f","OutlineColor":"191919"}') },
+		['gompgomp'] 		= { 1, httpService:JSONDecode('{"FontColor":"FFFFFF","MainColor":"0A0A0A","AccentColor":"6468AD","SelectedTabColor":"0A0A0A","BackgroundColor":"0A0A0A","OutlineColor":"191919"}') },
+		['Default'] 		= { 2, httpService:JSONDecode('{"FontColor":"BFBFBF","MainColor":"0F0F0F","AccentColor":"929667","SelectedTabColor":"101010","BackgroundColor":"1B1B1B","OutlineColor":"0B0B0B"}') },
+		['GameSense'] 		= { 3, httpService:JSONDecode('{"FontColor":"919191","MainColor":"101010","AccentColor":"9CB819","SelectedTabColor":"101010","BackgroundColor":"111111","OutlineColor":"2D2D2D"}') },
+		['Comet.pub'] 		= { 4, httpService:JSONDecode('{"FontColor":"5E5E5E","MainColor":"0F0F0F","AccentColor":"5D589D","SelectedTabColor":"1a191d","BackgroundColor":"0F0F0F","OutlineColor":"191919"}') },
+		['Tokyohook.cc'] 	= { 5, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"191925","AccentColor":"6759b3","SelectedTabColor":"1a1a29","BackgroundColor":"16161f","OutlineColor":"433e58"}') },
+		['pandahook.cc'] 	= { 6, httpService:JSONDecode('{"FontColor":"AEAEAE","MainColor":"0F0F0F","AccentColor":"30406A","SelectedTabColor":"151515","BackgroundColor":"0F0F0F","OutlineColor":"171717"}') },
+		['Mae.lua'] 	        = { 7, httpService:JSONDecode('{"FontColor":"c5c5c5","MainColor":"0F0F0F","AccentColor":"ffc6fe","SelectedTabColor":"171717","BackgroundColor":"0f0f0f","OutlineColor":"191919"}') },
 	}
-
-	function ThemeManager:ApplyDerivedColors()
-		local lib = self.Library
-		if not lib then
-			return
-		end
-
-		lib.SecondarySurface = lib.SecondarySurface or lib.MainColor
-		lib.TertiarySurface = lib.TertiarySurface or lib.OutlineColor
-		lib.OutlineStrong = lib.OutlineStrong or lib.OutlineColor
-		lib.AccentHover = lib.AccentHover or lib:GetLighterColor(lib.AccentColor, 0.2)
-		lib.AccentMuted = lib.AccentMuted or lib:GetDarkerColor(lib.AccentColor)
-		lib.FontSecondary = lib.FontSecondary or lib.FontColor
-		lib.FontMuted = lib.FontMuted or lib.FontSecondary
-
-		lib.KeybindAltColor = lib.SecondarySurface
-		lib.FontColor2 = lib.FontColor
-		lib.SelectedTabColor = lib.MainColor
-		lib.AccentColorDark = lib:GetDarkerColor(lib.AccentColor)
-	end
 
 	function ThemeManager:ApplyTheme(theme)
 		local customThemeData = self:GetCustomTheme(theme)
@@ -72,33 +21,34 @@ local ThemeManager = {} do
 
 		if not data then return end
 
-		local scheme = data[2] or data
+		-- custom themes are just regular dictionaries instead of an array with { index, dictionary }
 
-		for idx, col in next, scheme do
+		local scheme = data[2]
+		for idx, col in next, customThemeData or scheme do
 			self.Library[idx] = Color3.fromHex(col)
-
+			
 			if Options[idx] then
 				Options[idx]:SetValueRGB(Color3.fromHex(col))
 			end
 		end
 
-		self:ApplyDerivedColors()
 		self:ThemeUpdate()
 	end
 
 	function ThemeManager:ThemeUpdate()
-		for _, field in next, self.ColorFields do
-			local key = field.Key
-			if Options and Options[key] then
-				self.Library[key] = Options[key].Value
+		-- This allows us to force apply themes without loading the themes tab :)
+		local options = { "FontColor", "MainColor", "AccentColor", "SelectedTabColor", "BackgroundColor", "OutlineColor" }
+		for i, field in next, options do
+			if Options and Options[field] then
+				self.Library[field] = Options[field].Value
 			end
 		end
 
-		self:ApplyDerivedColors()
+		self.Library.AccentColorDark = self.Library:GetDarkerColor(self.Library.AccentColor);
 		self.Library:UpdateColorsUsingRegistry()
 	end
 
-	function ThemeManager:LoadDefault()
+	function ThemeManager:LoadDefault()		
 		local theme = 'gompgomp'
 		local content = isfile(self.Folder .. '/themes/default.txt') and readfile(self.Folder .. '/themes/default.txt')
 
@@ -108,10 +58,10 @@ local ThemeManager = {} do
 				theme = content
 			elseif self:GetCustomTheme(content) then
 				theme = content
-				isDefault = false
+				isDefault = false;
 			end
 		elseif self.BuiltInThemes[self.DefaultTheme] then
-			theme = self.DefaultTheme
+		 	theme = self.DefaultTheme
 		end
 
 		if isDefault then
@@ -126,13 +76,13 @@ local ThemeManager = {} do
 	end
 
 	function ThemeManager:CreateThemeManager(groupbox)
-		groupbox:AddDivider()
-
-		for _, field in next, self.ColorFields do
-			groupbox:AddLabel(field.Label):AddColorPicker(field.Key, {
-				Default = self.Library[field.Key],
-			})
-		end
+        groupbox:AddDivider()
+		groupbox:AddLabel('Background color'):AddColorPicker('BackgroundColor', { Default = self.Library.BackgroundColor });
+		groupbox:AddLabel('Main color')	:AddColorPicker('MainColor', { Default = self.Library.MainColor });
+		groupbox:AddLabel('Accent color'):AddColorPicker('AccentColor', { Default = self.Library.AccentColor });
+        groupbox:AddLabel('Selected tab color'):AddColorPicker('SelectedTabColor', { Default = self.Library.SelectedTabColor });
+		groupbox:AddLabel('Outline color'):AddColorPicker('OutlineColor', { Default = self.Library.OutlineColor });
+		groupbox:AddLabel('Font color')	:AddColorPicker('FontColor', { Default = self.Library.FontColor });
 
 		local ThemesArray = {}
 		for Name, Theme in next, self.BuiltInThemes do
@@ -157,9 +107,9 @@ local ThemeManager = {} do
 		groupbox:AddDropdown('ThemeManager_CustomThemeList', { Text = 'Custom themes', Values = self:ReloadCustomThemes(), AllowNull = true, Default = 1 })
 		groupbox:AddInput('ThemeManager_CustomThemeName', { Text = 'Custom theme name' })
 
-		groupbox:AddButton('Load theme', function()
-			self:ApplyTheme(Options.ThemeManager_CustomThemeList.Value)
-		end):AddButton('Save theme', function()
+		groupbox:AddButton('Load theme', function() 
+			self:ApplyTheme(Options.ThemeManager_CustomThemeList.Value) 
+		end):AddButton('Save theme', function() 
 			self:SaveCustomTheme(Options.ThemeManager_CustomThemeName.Value)
 
 			Options.ThemeManager_CustomThemeList.Values = self:ReloadCustomThemes()
@@ -186,9 +136,12 @@ local ThemeManager = {} do
 			self:ThemeUpdate()
 		end
 
-		for _, field in next, self.ColorFields do
-			Options[field.Key]:OnChanged(UpdateTheme)
-		end
+		Options.BackgroundColor:OnChanged(UpdateTheme)
+		Options.MainColor:OnChanged(UpdateTheme)
+		Options.AccentColor:OnChanged(UpdateTheme)
+        Options.SelectedTabColor:OnChanged(UpdateTheme)
+		Options.OutlineColor:OnChanged(UpdateTheme)
+		Options.FontColor:OnChanged(UpdateTheme)
 	end
 
 	function ThemeManager:GetCustomTheme(file)
@@ -199,7 +152,7 @@ local ThemeManager = {} do
 
 		local data = readfile(path)
 		local success, decoded = pcall(httpService.JSONDecode, httpService, data)
-
+		
 		if not success then
 			return nil
 		end
@@ -213,12 +166,10 @@ local ThemeManager = {} do
 		end
 
 		local theme = {}
+		local fields = { "FontColor", "MainColor", "AccentColor", "BackgroundColor", "OutlineColor" }
 
-		for _, field in next, self.ColorFields do
-			local option = Options[field.Key]
-			if option then
-				theme[field.Key] = option.Value:ToHex()
-			end
+		for _, field in next, fields do
+			theme[field] = Options[field].Value:ToHex()
 		end
 
 		writefile(self.Folder .. '/themes/' .. file .. '.json', httpService:JSONEncode(theme))
@@ -231,6 +182,8 @@ local ThemeManager = {} do
 		for i = 1, #list do
 			local file = list[i]
 			if file:sub(-5) == '.json' then
+				-- i hate this but it has to be done ...
+
 				local pos = file:find('.json', 1, true)
 				local char = file:sub(pos, pos)
 
@@ -250,11 +203,13 @@ local ThemeManager = {} do
 
 	function ThemeManager:SetLibrary(lib)
 		self.Library = lib
-		self:ApplyDerivedColors()
 	end
 
 	function ThemeManager:BuildFolderTree()
 		local paths = {}
+
+		-- build the entire tree if a path is like some-hub/phantom-forces
+		-- makefolder builds the entire tree on Synapse X but not other exploits
 
 		local parts = self.Folder:split('/')
 		for idx = 1, #parts do
